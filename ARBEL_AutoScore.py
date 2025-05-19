@@ -158,5 +158,5 @@ for Experiment in Experiments:
     data_summary.to_csv(Experiment_path + OutputFolder + '/Behavior_summary_' + Experiment + '_' + timestamp + '.csv')
 print('Done.')
 toc()
-Done() #Play sounds when done.
+# Done() #Play sounds when done. Works on Windows.
 
