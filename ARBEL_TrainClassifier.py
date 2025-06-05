@@ -34,11 +34,11 @@ from AniML_utils_PixBrightnessFeatureExtraction import *
 from AniML_utils_PreprocessingDataset import *
 from AniML_utils_LearningCurve import *
 from AniML_VideoLabel import *
-from ARBEL_Predict import *
+from ARBEL_utils_Predict import *
 from AniML_utils_Publishing import *
 import glob
 from AniML_utils_LearningCurve import *
-from ARBEL_Filter import *
+from ARBEL_utils_Filter import *
 
 import xgboost as xgb
 from sklearn.metrics import f1_score, precision_score, accuracy_score, recall_score, r2_score, confusion_matrix, ConfusionMatrixDisplay
@@ -56,25 +56,26 @@ thresh_tuned=None
 # Which classifiers do you want to train (names should match header is target files)
 # Behavior and filtering parameters from Barkai et al. (Uncomment the behavior wanted)
 project_folder = 'BarkaiEtAl'
-Behavior_type = ['Flinching']; min_bout, min_after_bout, max_gap = 4,1,2; thresh_tuned=0.5
+
+####Acute pain
+# Behavior_type = ['Flinching']; min_bout, min_after_bout, max_gap = 4,1,2; thresh_tuned=0.5
 # Behavior_type = ['LickingBiting']; min_bout, min_after_bout, max_gap = 5,1,2; thresh_tuned=0.5
 # Behavior_type = ['Grooming']; min_bout, min_after_bout, max_gap = 1,1,5; thresh_tuned=0.4
-# Behavior_type = ['Rearing']; min_bout, min_after_bout, max_gap = 5,1,0; thresh_tuned=0.65
 
-# Behavior_type = ['Scratching']; min_bout, min_after_bout, max_gap = 14, 1, 14; thresh_tuned=0.65
+test_set = [9, 11, 13, 20] # files to leave out as test set from the video folder.
 
-# project_folder = '/' #r'H:\Shared drives\WoolfLab\Omer\Peoples data\SunzeFlicking/'
-# Behavior_type = ['Flicking']; min_bout, min_after_bout,max_gap=4,3,3; thresh_tuned=0.67
+
+
 
 # Choose train/test dataset source folders:
 train_pose_folder = project_folder+r'\Videos'
 train_video_folder = project_folder+r'\Videos'
 train_target_folder = project_folder+r'\Targets'
+# train_target_folder = r'C:\Users\ch226295\PycharmProjects\AniML\BarkaiEtAl\Targets(HumanScored)'
 
 test_video_folder = train_video_folder
 test_pose_folder = train_video_folder
 test_target_folder = train_target_folder
-test_set = [9, 11, 13, 20] # files to leave out as test set from the video folder.
 
 
 # Choose video output folder:
@@ -83,6 +84,7 @@ video_output_folder = project_folder+r'\VideosScored/'
 # Parameters
 bp_include_list = None # To use only a chosen set of body parts pose features(None=All)
 bp_pixbrt_list = ['hrpaw', 'hlpaw', 'snout'] # The body parts that are to be included in Pixel Brightness features
+bp_pixbrt_list = ['centroid','tailbase', 'snout']
 pix_threshold = 0.3 # Threshold of birghtness: <1 is by precentage (e.g 0.3 for 30%); >1 for 1-to256 pixel intensity
 square_size = [40, 40, 40] # square sizes for Brightness analysis
 
@@ -202,7 +204,7 @@ for i_count, i_file in enumerate(test_set):
 
     X_test = pd.concat([X_test, temp_X])
     y_test = pd.concat([y_test, pd.DataFrame(temp_y)])
-    y_test = y_test.astype(int)
+    y_test = y_test[Behavior_type].astype(int)
 y_test_starts=[0] + y_test_starts[1:-1]
 y_test_ends = y_test_starts[1:] + [len(X_test)]
 X_test = X_test.reset_index(drop=True)  # drop=True for dropping the 'index' column created with reset_index
@@ -270,7 +272,7 @@ print(f'Threshold set to:{best_thresh}.\n'
 plt.savefig(classifier_library_path +classifier_name + '_PerformanceThreshold' +  '.png', format='png', dpi=300)
 
 #%% 2.3 Plot learning curve
-learning_curve=False #set to false to avoid running automatically
+learning_curve=True #set to false to avoid running automatically
 if learning_curve:
     # %% Create learning curve
     CV = 5
@@ -376,31 +378,8 @@ if save_model:
 
     plt.savefig(classifier_library_path  + classifier_name+'_SHAP_Importance' + '.png', format='png', dpi=300, transparent=False)
 
-# %% Creat video
-    file_to_test = 0
-    test_pose_file = train_file_list[test_set[file_to_test]]
-    VideoName = test_pose_file.split('DLC')[0]
-    print("Writing video...")
-    LabelVideo(VideoName=VideoName,
-               Folder=test_video_folder,
-               OutputFolder=video_output_folder,
-               BehaviorLabels=y_test_copy[y_test_starts[file_to_test]:y_test_ends[file_to_test]],#[file_to_test*4500:(file_to_test+1)*4500],#y_padded[75000:],#,
-               InputFileType='.avi',
-               OutputFileType='.avi',
-               FrameCount=True,
-               Resolution_factor=0.33,
-               fromFrame=0,
-               toFrame=1000,
-               inIncrement=1,
-               pix_threshold= pix_threshold*256,
-               only_pix_threshold=False,
-               colormap='coolwarm',
-               LabelType='Text',#'Number'
-               plot=False
-               )
 
-# %% Save training and test data to pickle
-if 0:
+# %% 4. Save training and test data to a pickle file
     import pickle
 
     with open(f'{project_folder}/train_test_set.pkl', 'wb') as f:
@@ -409,3 +388,28 @@ if 0:
             'train_file_list': train_file_list
         }
         pickle.dump(train_test_data, f)
+
+# %% 5. Save training and test data to a pickle file
+# Creat video
+        file_to_test = 0
+        test_pose_file = train_file_list[test_set[file_to_test]]
+        VideoName = test_pose_file.split('DLC')[0]
+        print("Writing video...")
+        LabelVideo(VideoName=VideoName,
+                   Folder=test_video_folder,
+                   OutputFolder=video_output_folder,
+                   BehaviorLabels=y_test_copy[y_test_starts[file_to_test]:y_test_ends[file_to_test]],
+                   # [file_to_test*4500:(file_to_test+1)*4500],#y_padded[75000:],#,
+                   InputFileType='.avi',
+                   OutputFileType='.avi',
+                   FrameCount=True,
+                   Resolution_factor=0.33,
+                   fromFrame=0,
+                   toFrame=1000,
+                   inIncrement=1,
+                   pix_threshold=pix_threshold * 256,
+                   only_pix_threshold=False,
+                   colormap='coolwarm',
+                   LabelType='Text',  # 'Number'
+                   plot=False
+                   )
