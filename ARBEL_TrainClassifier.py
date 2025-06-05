@@ -84,7 +84,6 @@ video_output_folder = project_folder+r'\VideosScored/'
 # Parameters
 bp_include_list = None # To use only a chosen set of body parts pose features(None=All)
 bp_pixbrt_list = ['hrpaw', 'hlpaw', 'snout'] # The body parts that are to be included in Pixel Brightness features
-bp_pixbrt_list = ['centroid','tailbase', 'snout']
 pix_threshold = 0.3 # Threshold of birghtness: <1 is by precentage (e.g 0.3 for 30%); >1 for 1-to256 pixel intensity
 square_size = [40, 40, 40] # square sizes for Brightness analysis
 
