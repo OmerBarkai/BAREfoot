@@ -1,5 +1,5 @@
 # BAREfoot
-This repository contains tools for the beta version  of BAREfoot (Automated Recognition of Behavioral Enhanced with Light). 
+This repository contains code and tools for BAREfoot (BARE=Behavior with Automatic Recognition and Evaluation)
 
 ## **License**
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
