@@ -1,4 +1,4 @@
-# BAREfoot(beta) 
+# BAREfoot
 This repository contains tools for the beta version  of BAREfoot (Automated Recognition of Behavioral Enhanced with Light). 
 
 ## **License**
