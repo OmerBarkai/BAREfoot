@@ -42,8 +42,8 @@ tic()
 #%% USER DEFINED FIELDS
 #######################
 
-create_videos=0 # Slower; Adjust resolution (0-to-1) for faster results.
-runDLC=0 # If videos were not DeepLabCutted then true
+create_videos=False # Slower; Users can adjust Resolution_factor parameter (0-1) to change speed.  
+runDLC=False # If videos were not DeepLabCutted then true
 
 fps = 25
 PoseDataFileType='h5'
@@ -55,9 +55,9 @@ skip_processed_folders=True #redo analysis on already processed folder?
 # Form: Experiment  -> Experiments (mouse) -> i_Trial(Before, drug, after, timepoints, etc.)
 # Example: Project (DARPA) > Experiment (Capsaicin 0.1%, morphine, Date) > Subject Trial files (*.H5, *.avi)
 
-Rig='BlackBox' #Enter rig name
+Rig='DarkBottomUp' #Enter rig name
 
-Project = r'' #Enter project folder
+Project = r' ' #Enter project folder
 Experiments =['   ','   '] #Enter experiemtns
 
 pix_threshold=0.3
@@ -71,8 +71,6 @@ Behavior_classifiers = [
                        'BAREfoot_Flinching.pkl',
                        'BAREfoot_LickingBiting.pkl',
                        'BAREfoot_Grooming.pkl',
-                       'BAREfoot_Rearing.pkl',
-                       'BAREfoot_Scratching.pkl',
                     ]
 
 #%% RUN! Automatic Recognition of Behavior Enhance with Light
@@ -160,7 +158,7 @@ for Experiment in Experiments:
             subject_summary =pd.concat([subject_summary, total_behavior_time],axis=1)
 
         ##### Create video (optional if 'create_videos==1')
-        if create_videos==1:
+        if create_videos:
                 print("Writing video...")
                 LabelVideo(VideoName=DataID,
                            Folder=videos_folder,
@@ -177,5 +175,5 @@ for Experiment in Experiments:
     data_summary.to_csv(OutputFolderPath + '/Behavior_summary_' + Experiment + '_' + timestamp + '.csv')
 print('Done.')
 toc()
-Done() #Play sounds when done.
+# Done() #Play sounds when done.
 
