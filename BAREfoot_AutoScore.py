@@ -42,56 +42,69 @@ tic()
 #%% USER DEFINED FIELDS
 #######################
 
-create_videos=False # Slower;
-Resolution_factor=0.4 # Users can adjust Resolution_factor parameter (0-1) to change speed.
-runDLC=False # If videos were not DeepLabCutted then true
-
-fps = 25
-PoseDataFileType='h5'
-#Crop video scoring (from frame to frame)
-From,To=(0, None)
-skip_processed_folders=True #redo analysis on already processed folder?
-
 ''' 1. Define behavior video folder '''
 # Form: Experiment  -> Experiments (mouse) -> i_Trial(Before, drug, after, timepoints, etc.)
 # Example: Project (DARPA) > Experiment (Capsaicin 0.1%, morphine, Date) > Subject Trial files (*.H5, *.avi)
 
 Rig='DarkBottomUp' #Enter rig name
 
-Project = r' ' #Enter project folder
-Experiments =['   ','   '] #Enter experiemtns
+Project = r'' #Enter project folder
+Experiments =[ #Enter experiments
+               # 'Experiment0',
+               # 'Experiment1',
+               #  'Experiment2',
+             ]
 
 pix_threshold=0.3
-bp_include_list = None #Manually choose which of the body parts to use for pose-based features (DLC keypoint names). None = All. 
-bp_pixbrt_list=['hrpaw', 'hlpaw','snout'] None #Manually choose which of the to use for pixel brightness-based features. 
+bp_include_list = None #Manually choose which of the body parts to use for pose-based features (DLC keypoint names). None = All.
+bp_pixbrt_list=['hrpaw', 'hlpaw','snout'] #Manually choose which of the to use for pixel brightness-based features.
 square_size=[40,40,40]
+class_thresh=[] #Defaults is the best threshold found during training.
 
 
 '''2. Define classifiers'''
-ClassifierLibraryFolder = rf'\BAREfoot_Classifiers\{Rig}/'
+ClassifierLibraryFolder = rf'BAREfoot_Classifiers\{Rig}/'
 Behavior_classifiers = [
-                       'BAREfoot_Flinching.pkl',
-                       'BAREfoot_LickingBiting.pkl',
-                       'BAREfoot_Grooming.pkl',
+                       # 'BAREfoot_Flinching.pkl',
+                       # 'BAREfoot_LickingBiting.pkl',
+                       # 'BAREfoot_Grooming.pkl',
                     ]
 
-#%% RUN! Automatic Recognition of Behavior Enhance with Light
+# Run DeepLabCut
+runDLC=False # If videos were not DeepLabCutted then True
+dlc_config_path=r'YourDLCpath\config.yaml' #If runDLC=True insert DLC config file path
+
+# Create behavior video (slows down process)
+create_videos=True
+Resolution_factor=0.4 # Adjust resolution (0-to-1). Higher resolution->slower.
+#Crop video scoring (from frame to frame)
+From,To=(0, None)
+
+# Data specs
+fps = 25 #Videos acuisition rate (frame per sec)
+PoseDataFileType='h5' #DLC output file type
+
+skip_processed_folders=False #redo analysis on already processed folder?
+#%% RUN BAREfoot!
+# Behavior with Automatic Recognition and Evaluation
 #############################################################
 timestamp=datetime.now().strftime("%H%M")
 '''Run by the list of experiments (Folders)'''
 for Experiment in Experiments:
     closeall()
-    Experiment_path = Project + f'{Experiment}/'
-    OutputFolder = 'BAREfoot_output_filtered'
+    Experiment_path = Project + f'/{Experiment}/'
+    OutputFolder = 'BAREfoot_output'
     OutputFolderPath = Experiment_path + OutputFolder
-    videos_folder = Experiment_path + f'/videos/'
+    videos_folder = Experiment_path + f'/videos/' #videos with lower case v
 
-    # Check if videos exist in folder at all
+    # Check if videos (or Videos) exist in folder at all
     if os.path.exists(videos_folder)==False:
-        print(f"{Experiment} - videos folder not found.")
-        continue
-    else:
-        print(f"{Experiment} - analyzing video folder.")
+        videos_folder = Experiment_path + f'/Videos/' #Videos with uppercase 'V'
+        if os.path.exists(videos_folder) == False:
+            print(f"{Experiment} - videos folder not found.")
+            continue
+        else:
+            print(f"{Experiment} - analyzing video folder.")
 
     #Check if it was already analyzed
     if os.path.exists(OutputFolderPath) and skip_processed_folders:
@@ -106,11 +119,10 @@ for Experiment in Experiments:
         print(f'DeepLabCut will run only on files that were not analyzed by DLC....')
         # Insert DeepLabCut config file to 'config_path'
         import deeplabcut
-        dlc_config_path=r'\config.yaml'
         deeplabcut.analyze_videos(dlc_config_path,videos_folder, save_as_csv=False, gputouse=0)
 
     # Experiment in Folders
-    pose_file_list = glob.glob(videos_folder + '/*DLC*filtered.' + PoseDataFileType)
+    pose_file_list = glob.glob(videos_folder + '/*DLC*.' + PoseDataFileType)
     pose_file_list = sorted([os.path.basename(file) for file in pose_file_list])  # for list of sessionfiles without folder
     pose_ID = sorted([os.path.basename(file).split('DLC')[0] for file in pose_file_list])
     data_summary=pd.DataFrame()
@@ -127,10 +139,10 @@ for Experiment in Experiments:
         data_path = videos_folder + pose_data_file
         X = BAREfoot_ExtractFeatures(pose_data_file=data_path,
                                   video_file_path=videos_folder + '/' + vid_file,
+                                  bp_include_list=bp_include_list,
                                   bp_pixbrt_list=bp_pixbrt_list,
                                   square_size=square_size,
-                                  pix_threshold=pix_threshold,
-                                  bp_include_list=bp_include_list)
+                                  pix_threshold=pix_threshold)
         subject_summary = pd.DataFrame()
 
         '''Run the data with all the selected classifiers'''
@@ -143,7 +155,7 @@ for Experiment in Experiments:
             Behavior_type = loaded_model['Behavior_type']
             Behavior_join= ''.join(Behavior_type[:])
 
-            y_pred_filt, y_pred = BAREfoot_Predict(clf_model_path, X)
+            y_pred_filt, y_pred = BAREfoot_Predict(clf_model_path, X, best_thresh=class_thresh )
 
             y_pred=y_pred.iloc[From:To,:]
             y_pred_filt=y_pred_filt.iloc[From:To,:]
@@ -155,9 +167,6 @@ for Experiment in Experiments:
             subject_y_pred_filts = pd.concat([subject_y_pred_filts,y_pred_filt],axis=1)
             ##### 2.2 Save summary file
             total_behavior_time = pd.DataFrame([round(np.sum(np.array(y_pred_filt))/fps,2)], columns=[f'{Behavior_join} time (s)'])
-            # mean_bout_duration = float(np.mean(np.transpose(find_consecutive_repeats(y_pred_filt)[np.where(find_consecutive_repeats(y_pred_filt)[:, 0] == True), 1])/fps))
-            # new_col=pd.DataFrame([[total_behavior_time,mean_bout_duration]],
-            #                      columns=[f'{Behavior_join} time (s)', f'{Behavior_join} bout mean (s)'])
             subject_summary =pd.concat([subject_summary, total_behavior_time],axis=1)
 
         ##### Create video (optional if 'create_videos==1')
@@ -170,12 +179,25 @@ for Experiment in Experiments:
                            InputFileType='.avi',
                            OutputFileType='.mp4',
                            FrameCount=True,
-                           Resolution_factor=0.7,
+                           Resolution_factor=Resolution_factor,
                            pix_threshold=0.3 * 256,
                            )
         data_summary = pd.concat([data_summary, subject_summary], axis=0)
     data_summary = pd.concat([data_subjects, data_summary.reset_index(drop=True)], axis=1)
-    data_summary.to_csv(OutputFolderPath + '/Behavior_summary_' + Experiment + '_' + timestamp + '.csv')
+
+    # Base filename
+    score_filename = f'Behavior_summary_{Experiment}_{timestamp}.csv'
+    score_filepath = os.path.join(OutputFolderPath, score_filename)
+
+    # Check if file exists and add (1), (2), ...
+    counter = 1
+    while os.path.exists(score_filepath):
+        score_filename = f'Behavior_summary_{Experiment}_{timestamp} ({counter}).csv'
+        csv_filepath = os.path.join(OutputFolderPath, score_filename)
+        counter += 1
+
+    # Save to the unique filepath
+    data_summary.to_csv(score_filepath)
 print('Done.')
 toc()
 # Done() #Play sounds when done.
