@@ -62,7 +62,8 @@ Project = r' ' #Enter project folder
 Experiments =['   ','   '] #Enter experiemtns
 
 pix_threshold=0.3
-bp_pixbrt_list=['hrpaw', 'hlpaw','snout']
+bp_include_list = None #Manually choose which of the body parts to use for pose-based features (DLC keypoint names). None = All. 
+bp_pixbrt_list=['hrpaw', 'hlpaw','snout'] None #Manually choose which of the to use for pixel brightness-based features. 
 square_size=[40,40,40]
 
 
@@ -128,7 +129,8 @@ for Experiment in Experiments:
                                   video_file_path=videos_folder + '/' + vid_file,
                                   bp_pixbrt_list=bp_pixbrt_list,
                                   square_size=square_size,
-                                  pix_threshold=pix_threshold)
+                                  pix_threshold=pix_threshold,
+                                  bp_include_list=bp_include_list)
         subject_summary = pd.DataFrame()
 
         '''Run the data with all the selected classifiers'''
