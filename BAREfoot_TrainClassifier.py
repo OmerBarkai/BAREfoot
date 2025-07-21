@@ -51,11 +51,11 @@ classifier_library_path = rf'BAREfoot_Classifiers\{Rig}/'
 os.makedirs(classifier_library_path, exist_ok=True)
 
 
-thresh_tuned=None
+project_folder = r' ' #Enter project volder (Project folder should contain 'videos' and 'targets' folders)
+
 
 # Which classifiers do you want to train (names should match header is target files)
 # Behavior and filtering parameters from Barkai et al. (Uncomment the behavior wanted)
-project_folder = 'BarkaiEtAl'
 
 ####Acute pain
 # Behavior_type = ['Flinching']; min_bout, min_after_bout, max_gap = 4,1,2; thresh_tuned=0.5
@@ -63,7 +63,6 @@ project_folder = 'BarkaiEtAl'
 # Behavior_type = ['Grooming']; min_bout, min_after_bout, max_gap = 1,1,5; thresh_tuned=0.4
 
 test_set = [9, 11, 13, 20] # files to leave out as test set from the video folder.
-
 
 
 
@@ -87,7 +86,7 @@ bp_pixbrt_list = ['hrpaw', 'hlpaw', 'snout'] # The body parts that are to be inc
 bp_pixbrt_list = ['centroid','tailbase', 'snout']
 pix_threshold = 0.3 # Threshold of birghtness: <1 is by precentage (e.g 0.3 for 30%); >1 for 1-to256 pixel intensity
 square_size = [40, 40, 40] # square sizes for Brightness analysis
-
+thresh_tuned=None
 
 Behavior_join= ''.join(Behavior_type[:]) # Single string in case of multi behvaiors
 classifier_name = 'BAREfoot_' + Behavior_join
@@ -399,13 +398,12 @@ if save_model:
                    Folder=test_video_folder,
                    OutputFolder=video_output_folder,
                    BehaviorLabels=y_test_copy[y_test_starts[file_to_test]:y_test_ends[file_to_test]],
-                   # [file_to_test*4500:(file_to_test+1)*4500],#y_padded[75000:],#,
                    InputFileType='.avi',
                    OutputFileType='.avi',
                    FrameCount=True,
                    Resolution_factor=0.33,
                    fromFrame=0,
-                   toFrame=1000,
+                   # toFrame=1000,
                    inIncrement=1,
                    pix_threshold=pix_threshold * 256,
                    only_pix_threshold=False,
