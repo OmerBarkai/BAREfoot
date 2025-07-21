@@ -44,56 +44,56 @@ import xgboost as xgb
 from sklearn.metrics import f1_score, precision_score, accuracy_score, recall_score, r2_score, confusion_matrix, ConfusionMatrixDisplay
 import shap
 import matplotlib.colors as mcolors
+
+
 #%% USER DEFINED FIELDS
-#######################
-Rig='BlackBox'
-classifier_library_path = rf'BAREfoot_Classifiers\{Rig}/'
-os.makedirs(classifier_library_path, exist_ok=True)
+#######################################################################################################
 
-
-project_folder = r' ' #Enter project volder (Project folder should contain 'videos' and 'targets' folders)
-
-
-# Which classifiers do you want to train (names should match header is target files)
-# Behavior and filtering parameters from Barkai et al. (Uncomment the behavior wanted)
-
-####Acute pain
+#### New classifier training specs
+#### Acute pain (used in Barkai et al.)
 # Behavior_type = ['Flinching']; min_bout, min_after_bout, max_gap = 4,1,2; thresh_tuned=0.5
 # Behavior_type = ['LickingBiting']; min_bout, min_after_bout, max_gap = 5,1,2; thresh_tuned=0.5
 # Behavior_type = ['Grooming']; min_bout, min_after_bout, max_gap = 1,1,5; thresh_tuned=0.4
 
+Behavior_type = ['NewBehavior'];
+min_bout, min_after_bout, max_gap = 1,1,5;
 test_set = [9, 11, 13, 20] # files to leave out as test set from the video folder.
 
+# Parameters
+bp_include_list = None # Choose which keypoint body parts to include in pose features(None=All)
+bp_pixbrt_list = ['hrpaw', 'hlpaw', 'snout'] # # Choose which keypoint body parts to include in pixelBrightness features
+pix_threshold = 0.3 # Threshold of birghtness: <-1 is by precentage (e.g 0.3 for 30%); >1 for 1-to256 pixel intensity
+square_size = [40, 40, 40] # square sizes for Brightness analysis
+
+Rig='BlackBox'
+project_folder = r'Classifier Training Sets/Rearing'
 
 
+# USER OPTIONAL FIELDS
+###################################################################################################
+classifier_library_path = rf'BAREfoot_Classifiers\{Rig}/'
+os.makedirs(classifier_library_path, exist_ok=True)
 # Choose train/test dataset source folders:
 train_pose_folder = project_folder+r'\Videos'
 train_video_folder = project_folder+r'\Videos'
 train_target_folder = project_folder+r'\Targets'
-# train_target_folder = r'C:\Users\ch226295\PycharmProjects\AniML\BarkaiEtAl\Targets(HumanScored)'
 
 test_video_folder = train_video_folder
 test_pose_folder = train_video_folder
 test_target_folder = train_target_folder
 
-
 # Choose video output folder:
 video_output_folder = project_folder+r'\VideosScored/'
-
-# Parameters
-bp_include_list = None # To use only a chosen set of body parts pose features(None=All)
-bp_pixbrt_list = ['hrpaw', 'hlpaw', 'snout'] # The body parts that are to be included in Pixel Brightness features
-bp_pixbrt_list = ['centroid','tailbase', 'snout']
-pix_threshold = 0.3 # Threshold of birghtness: <1 is by precentage (e.g 0.3 for 30%); >1 for 1-to256 pixel intensity
-square_size = [40, 40, 40] # square sizes for Brightness analysis
-thresh_tuned=None
 
 Behavior_join= ''.join(Behavior_type[:]) # Single string in case of multi behvaiors
 classifier_name = 'BAREfoot_' + Behavior_join
 
 # Display setting
 Beh_color = 'darkred'
-Beh_cmap = custom_cmap('f{Beh_color}s', from_color='white', to_color=Beh_color)
+Beh_cmap = custom_cmap(f'{Beh_color}s_map', from_color='white', to_color=Beh_color)
+
+# Which classifiers do you want to train (names should match header is target files)
+# Behavior and filtering parameters from Barkai et al. (Uncomment the behavior wanted)
 
 #RUN! Train Classifier
 ########################################################################################################################
@@ -313,6 +313,7 @@ if save_model:
         'min_bout': min_bout,
         'min_after_bout': min_after_bout,
         'max_gap': max_gap,
+        'bp_include_list': bp_include_list,
         'bp_pixbrt_list': bp_pixbrt_list,
         'pix_threshold': pix_threshold,
     }
@@ -381,7 +382,7 @@ if save_model:
 # %% 4. Save training and test data to a pickle file
     import pickle
 
-    with open(f'{project_folder}/train_test_set.pkl', 'wb') as f:
+    with open(f'{classifier_library_path}/{Behavior_type[0]}_train_test_set.pkl', 'wb') as f:
         train_test_data = {
             'X': X_copy, 'y': y_copy, 'X_test': X_test_copy, 'y_test': y_test_copy, 'test_file_list': test_file_list,
             'train_file_list': train_file_list
