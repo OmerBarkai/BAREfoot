@@ -42,7 +42,8 @@ tic()
 #%% USER DEFINED FIELDS
 #######################
 
-create_videos=False # Slower; Users can adjust Resolution_factor parameter (0-1) to change speed.  
+create_videos=False # Slower;
+Resolution_factor=0.4 # Users can adjust Resolution_factor parameter (0-1) to change speed.
 runDLC=False # If videos were not DeepLabCutted then true
 
 fps = 25
