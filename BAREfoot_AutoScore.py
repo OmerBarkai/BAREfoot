@@ -70,6 +70,9 @@ Behavior_classifiers = [
                        # 'BAREfoot_Grooming.pkl',
                     ]
 
+# Use filtered DLC files
+useDLCfiltered=True
+
 # Run DeepLabCut
 runDLC=False # If videos were not DeepLabCutted then True
 dlc_config_path=r'YourDLCpath\config.yaml' #If runDLC=True insert DLC config file path
@@ -122,7 +125,7 @@ for Experiment in Experiments:
         deeplabcut.analyze_videos(dlc_config_path,videos_folder, save_as_csv=False, gputouse=0)
 
     # Experiment in Folders
-    pose_file_list = glob.glob(videos_folder + '/*DLC*.' + PoseDataFileType)
+    pose_file_list = glob.glob(videos_folder + f'/*DLC*{"filtered" if useDLCfiltered else ""}.' + PoseDataFileType)
     pose_file_list = sorted([os.path.basename(file) for file in pose_file_list])  # for list of sessionfiles without folder
     pose_ID = sorted([os.path.basename(file).split('DLC')[0] for file in pose_file_list])
     data_summary=pd.DataFrame()
