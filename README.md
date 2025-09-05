@@ -9,9 +9,12 @@ This project is licensed under the Creative Commons Attribution-NonCommercial-No
 
 
 ## **Citation**
-ARBEL: A Machine Learning Tool with Light-Based Image Analysis for Automatic Classification of 3D Pain Behaviors.
-Omer Barkai, Biyao Zhang,  Bruna Lenfers Turnes, Maryam Arab,  David A Yarmolinsky, Zihe Zhang, Lee B Barrett,  Clifford J Woolf  
-[bioRxiv preprint] - doi: https://doi.org/10.1101/2024.12.01.625907  
+A machine learning tool with light-based image analysis for automatic classification of 3D pain behaviors.
+Barkai O, Zhang B, Turnes BL, Arab M, Yarmolinsky DA, Zhang Z, Barrett LB, Woolf CJ. 
+
+Cell Rep Methods. 2025 Aug 19:101145. 
+
+doi: 10.1016/j.crmeth.2025.101145. 
 
 Please cite our work and follow our publication updates.
 
