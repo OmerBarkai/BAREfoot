@@ -1,5 +1,7 @@
 # BAREfoot
+
 This repository contains code and tools for BAREfoot (BARE=Behavior with Automatic Recognition and Evaluation)
+(BAREfoot was previously named ARBEL)
 
 ## **License**
 [![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -17,7 +19,7 @@ Cell Rep Methods. 2025 Aug 19:101145.
 doi: 10.1016/j.crmeth.2025.101145. 
 
 Please cite our work and follow our publication updates.
-
+Please do not cite the bioRxiv preprint.
 
 ---
 ## **BAREfoot_TrainClassifier.py**
