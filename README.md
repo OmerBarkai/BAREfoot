@@ -1,14 +1,7 @@
 # BAREfoot
+_BAREfoot was formerly known as ARBEL (name retired 2025)._
 
 This repository contains code and tools for BAREfoot (BARE=Behavior with Automatic Recognition and Evaluation)
-
-_BAREfoot was formerly known as ARBEL (name retired)._
-
-## **License**
-[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
-
-This project is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
-
 
 
 ## **Citation**
@@ -21,6 +14,11 @@ doi: 10.1016/j.crmeth.2025.101145.
 
 Please cite our work and follow our publication updates.
 Please do not cite the bioRxiv preprint.
+
+## **License**
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC%20BY--NC--ND%204.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+
+This project is licensed under the Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International License (CC BY-NC-ND 4.0).
 
 ---
 ## **BAREfoot_TrainClassifier.py**
