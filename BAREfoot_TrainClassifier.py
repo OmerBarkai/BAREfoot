@@ -269,7 +269,7 @@ plt.tight_layout()
 print(f'Threshold set to:{best_thresh}.\n'
       f'To change, manually set best_thresh value (e.g. best_thresh=0.5)')
 plt.savefig(classifier_library_path +classifier_name + '_PerformanceThreshold' +  '.png', format='png', dpi=300)
-
+plt.savefig(classifier_library_path +classifier_name + '_PerformanceThreshold' +  '.svg', format='svg', dpi=300)
 #%% 2.3 Plot learning curve
 learning_curve=True #set to false to avoid running automatically
 if learning_curve:
@@ -299,7 +299,7 @@ if learning_curve:
     plt.xticks(ticks=pstv_bouts_sizes, rotation=45, ha='center', fontsize=8)
     plt.tight_layout()
     plt.savefig(classifier_library_path + classifier_name +'_LearningCurve'+  '.png', format='png', dpi=300, transparent=False)
-
+    plt.savefig(classifier_library_path + classifier_name +'_LearningCurve'+  '.svg', format='svg', dpi=300)
 #######################################################################################################################
 #%% 3. Save classifier and SHAP values'''
 save_model=True
@@ -377,7 +377,7 @@ if save_model:
     plt.tight_layout()
 
     plt.savefig(classifier_library_path  + classifier_name+'_SHAP_Importance' + '.png', format='png', dpi=300, transparent=False)
-
+    plt.savefig(classifier_library_path  + classifier_name+'_SHAP_Importance' + '.svg', format='svg', dpi=300, transparent=False)
 
 # %% 4. Save training and test data to a pickle file
     import pickle
