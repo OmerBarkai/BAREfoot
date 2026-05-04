@@ -1,5 +1,4 @@
-
-<img width="317" height="364" alt="Asset 2" src="https://github.com/user-attachments/assets/3442b915-ea68-4487-b81e-845c0608a35a" />
+<img width="342" height="141" alt="Asset 3" src="https://github.com/user-attachments/assets/e0a6dfd2-6f48-4533-af5c-06a13bbf4a8e" />
 
 # BAREfoot
 _BAREfoot was formerly known as ARBEL (name retired 2025)._
